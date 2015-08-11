@@ -1,7 +1,8 @@
-import processing.serial.*;
+import processing.net.*;
 
 // The serial port:
-Serial myPort;
+Server myServer;
+Client myClient;
 
 int x = 0;
 int y = 0;
@@ -9,9 +10,6 @@ int y = 0;
 byte[] data;
 
 void setup() {
-  // List all the available serial ports:
-  println(Serial.list());
-
   data = new byte[4720];
   int m = 0;
   for (int k = 0; k < 59; k++) {
@@ -19,18 +17,26 @@ void setup() {
       data[m++] = (byte)(2 * k);
     }
   }
-  myPort = new Serial(this, "/dev/cu.usbserial-A903C363", 115200);
-  println(myPort.readStringUntil(10));
-  println(myPort.readStringUntil(10));
 
-  myPort.write("./FollowMe\r");
+  myServer = new Server(this, 11539);
 }
 
 void draw() {
-  if (myPort.available() == 0) {
+  if (myClient == null) {
+    myClient = myServer.available();
+    if (myClient == null) {
+      return;
+    }
+    println("Connected!");
+  }
+
+  byte[] data = myClient.readBytes();
+  if (data == null) {
+    println("data == null");
     return;
   }
-  byte[] data = myPort.readBytes();
+
+  println("read " + data.length + " bytes");
 
   loadPixels();
   for (int i = 0; i < data.length; i++) {
@@ -48,7 +54,4 @@ void draw() {
   updatePixels();
 }
 
-void mousePressed() {
-  myPort.write("\u0003");
-  exit(); 
-}
+
