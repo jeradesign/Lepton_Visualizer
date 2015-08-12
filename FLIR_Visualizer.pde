@@ -4,20 +4,9 @@ import processing.net.*;
 Server myServer;
 Client myClient;
 
-int x = 0;
-int y = 0;
-
-byte[] data;
+byte[] frame = new byte[9840];
 
 void setup() {
-  data = new byte[4720];
-  int m = 0;
-  for (int k = 0; k < 59; k++) {
-    for (int l = 0; l < 80; l++) {
-      data[m++] = (byte)(2 * k);
-    }
-  }
-
   myServer = new Server(this, 11539);
 }
 
@@ -30,25 +19,20 @@ void draw() {
     println("Connected!");
   }
 
-  byte[] data = myClient.readBytes();
-  if (data == null) {
-    println("data == null");
+  if (myClient.available() < 9840) {
     return;
   }
 
-  println("read " + data.length + " bytes");
+  int result = myClient.readBytes(frame);
+
+  println("read " + frame.length + " bytes");
 
   loadPixels();
-  for (int i = 0; i < data.length; i++) {
-    color c = color(0xff & data[i]);
-    pixels[y * width + x] = c;
-    x++;
-    if (x >= 80) {
-      x = 0;
-      y++;
-      if (y >= 60) {
-        y = 0;
-      }
+  for (int y = 0; y < 60; y++) {
+    for (int x = 0; x <80; x++) {
+      int i = y * 164 + 2*x + 5;
+      color c = color(0xff & frame[i]);
+      pixels[y * width + x] = c;
     }
   }
   updatePixels();
