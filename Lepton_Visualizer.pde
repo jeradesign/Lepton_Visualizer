@@ -4,6 +4,8 @@ final int FRAMESIZE = 9840;
 final int ROWS = 60;
 final int COLS = 80;
 final int ROWSIZE = 164;
+final int MIN_TEMP = 8100;
+final int MAX_TEMP = 8400;
 
 // The serial port:
 Server myServer;
@@ -57,12 +59,12 @@ void draw() {
       if (pixel < minPixel) {
         minPixel = pixel;
       }
-      if (pixel < 8000) {
-        pixel = 8000;
-      } else if (pixel > 8500) {
-        pixel = 8500;
+      if (pixel < MIN_TEMP) {
+        pixel = MIN_TEMP;
+      } else if (pixel > MAX_TEMP) {
+        pixel = MAX_TEMP;
       }
-      pixel = (int) map(pixel, 8000, 8500, 0, 255);
+      pixel = (int) map(pixel, MIN_TEMP, MAX_TEMP, 0, 255);
 //      pixel >>= 4;
       pixel &= 0xff;
       color c = color(pixel);
