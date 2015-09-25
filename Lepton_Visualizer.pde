@@ -1,11 +1,11 @@
 import processing.net.*;
 
-final int FRAMESIZE = 9840;
 final int ROWS = 60;
 final int COLS = 80;
 final int ROWSIZE = 164;
 final int MIN_TEMP = 8100;
 final int MAX_TEMP = 8400;
+final int FRAMESIZE = ROWS * COLS * 3;
 
 // The serial port:
 Server myServer;
@@ -50,24 +50,15 @@ void draw() {
   pg.beginDraw();
   pg.loadPixels();
   for (int y = 0; y < ROWS; y++) {
-    for (int x = 0; x <COLS; x++) {
-      int i = y * ROWSIZE + 2*x + 4;
-      int pixel = 256 * (0xff & frame[i]) + (0xff & frame[i + 1]);
-      if (pixel > maxPixel) {
-        maxPixel = pixel;
-      }
-      if (pixel < minPixel) {
-        minPixel = pixel;
-      }
-      if (pixel < MIN_TEMP) {
-        pixel = MIN_TEMP;
-      } else if (pixel > MAX_TEMP) {
-        pixel = MAX_TEMP;
-      }
-      pixel = (int) map(pixel, MIN_TEMP, MAX_TEMP, 0, 255);
-//      pixel >>= 4;
-      pixel &= 0xff;
-      color c = color(pixel);
+//    println("y = " + y + " ------------------------------------");
+    for (int x = 0; x < COLS; x++) {
+      int i = 3 * (y * COLS + x);
+//      println("x = " + x + ", i = " + i);
+      int pixelr = frame[i] & 0xff;
+      int pixelg = frame[i + 1] & 0xff;
+      int pixelb = frame[i + 2] & 0xff;
+//      println("" + pixelr + ", " + pixelg + ", " + pixelb);
+      color c = color(pixelr, pixelg, pixelb);
       pg.pixels[y * pg.width + x] = c;
     }
   }
