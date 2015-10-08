@@ -32,6 +32,11 @@ void draw() {
     println("Connected!");
   }
 
+  if (!myClient.active()) {
+    myClient = null;
+    return;
+  }
+
   if (myClient.available() < FRAMESIZE) {
     return;
   }
