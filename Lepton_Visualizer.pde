@@ -7,6 +7,8 @@ final int ROWSIZE = 164;
 final int MIN_TEMP = 8100;
 final int MAX_TEMP = 8400;
 
+boolean dumpFrame = false;
+
 // The serial port:
 Server myServer;
 Client myClient;
@@ -49,6 +51,12 @@ void draw() {
 
 //  checkFrame();
 
+  if (dumpFrame) {
+    dumpFrame = false;
+    
+    dumpPixels(frame);
+  }
+
   int maxPixel = 0;
   int minPixel = 16384;
 
@@ -84,6 +92,22 @@ void draw() {
   
   image(pg, 0, 0, 640, 480);
 //  println("frame " + frameCount);
+}
+
+void mouseClicked() {
+  println("mouse clicked");
+  dumpFrame = true;
+}
+
+void dumpPixels(byte[] frame) {
+  for (int y = 0; y < ROWS; y++) {
+    for (int x = 0; x <COLS; x++) {
+      int i = y * ROWSIZE + 2*x + 4;
+      int pixel = 256 * (0xff & frame[i]) + (0xff & frame[i + 1]);
+      print(pixel + ", ");
+    }
+    println();
+  }
 }
 
 void checkFrame() {
